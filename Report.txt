@@ -1,0 +1,174 @@
+Spam Message Classification Using Machine Learning
+
+
+1. Introduction
+---------------
+
+
+Spam messages are a growing concern in digital communication. This project aims to classify SMS messages as spam or ham (not spam) using machine learning models. We use a real-world dataset from the UCI repository and implement multiple ML models along with MLflow tracking.
+
+2. Data Ingestion
+------------------
+
+
+We used the SMS Spam Collection Dataset, which contains two columns:
+
+label: Either "spam" or "ham".
+
+message: The actual SMS content.
+
+The dataset was read using pandas:
+
+df = pd.read_csv('spam cv.csv')
+
+
+
+
+3. Data Preprocessing
+---------------------
+
+
+To prepare the text data:
+
+Lowercased all messages
+
+Removed punctuation and stop words
+
+Applied tokenization and stemming
+
+TF-IDF vectorization was used to convert text into numeric features:
+
+
+from sklearn.feature_extraction.text import TfidfVectorizer
+vectorizer = TfidfVectorizer(max_features=3000)
+X = vectorizer.fit_transform(df['message'])
+
+
+
+4. Data Validation
+------------------
+
+
+We ensured:
+
+No null values
+
+Label distribution is not heavily imbalanced
+
+Unique message count is reasonable
+
+df.isnull().sum()
+df['label'].value_counts()
+
+
+
+5. Data Transformation
+-----------------------
+
+
+Converted labels: spam → 1, ham → 0
+
+Split into train-test sets (80:20 split)
+
+from sklearn.model_selection import train_test_split
+y = df['label'].map({'ham': 0, 'spam': 1})
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
+
+
+
+6. Model Training
+------------------
+
+
+We trained the following models:
+
+Logistic Regression
+
+Naive Bayes
+
+Support Vector Machine
+
+Random Forest
+
+Sample training:
+from sklearn.linear_model import LogisticRegression
+model = LogisticRegression()
+model.fit(X_train, y_train)
+
+
+
+7. Model Evaluation
+-------------------
+
+
+Used metrics:
+
+Accuracy
+
+Precision
+
+Recall
+
+F1 Score
+
+from sklearn.metrics import classification_report
+y_pred = model.predict(X_test)
+print(classification_report(y_test, y_pred))
+
+
+
+8. MLflow Tracking
+-------------------
+
+We integrated MLflow to:
+
+Log parameters
+
+Store model artifacts
+
+Track metrics
+
+import mlflow
+with mlflow.start_run():
+    mlflow.log_param("model", "LogisticRegression")
+    mlflow.log_metric("accuracy", accuracy_score)
+    mlflow.sklearn.log_model(model, "spam_model")
+
+
+
+9. Project Pipeline
+--------------------
+Load Data
+
+Clean & Preprocess Text
+
+Transform using TF-IDF
+
+Train and Evaluate Models
+
+Track with MLflow
+
+Save final model
+
+Serve predictions via GUI
+
+
+
+10. Steps To Run the Project
+----------------------------
+
+Install requirements:
+
+
+pip install pandas scikit-learn mlflow flask
+Run the notebook: spam_model.ipynb
+
+Start MLflow UI:
+mlflow ui
+Use the GUI (sp.html) to test the model
+
+
+
+11. Conclusion
+--------------
+The project demonstrates how machine learning can be effectively used to classify spam messages. Among the tested models, [best_model_name] achieved the highest accuracy. MLflow provided robust model tracking and experiment management.
